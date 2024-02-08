@@ -55,7 +55,7 @@ setup(
     packages=find_packages(include=[f"{PROJECT_NAME}", f"{PROJECT_NAME}.*"]),
     entry_points={
         "console_scripts": [
-            "sord=sord.ui:main",
+            "sord=sord.__main__:main",
         ],
     },
     python_requires=">=3.10",
