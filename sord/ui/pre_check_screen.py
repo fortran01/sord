@@ -1,7 +1,15 @@
 import sys
 import os
 import configparser
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton
+import subprocess
+from PyQt6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QMessageBox,
+)
 
 
 class PreCheckScreen(QDialog):
@@ -14,12 +22,14 @@ class PreCheckScreen(QDialog):
 
         layout = QVBoxLayout()
 
-        self.checkLabel = QLabel("Checking for AWS config files...", self)
+        self.checkLabel = QLabel("Checking system requirements...", self)
         layout.addWidget(self.checkLabel)
 
         self.setLayout(layout)
 
         self.config_path = self.determine_config_path()
+        self.awsCliCheckResult = self.checkAWSCLI()
+        self.updateCheckLabel(self.awsCliCheckResult)
         self.checkConfig()
 
     def determine_config_path(self):
@@ -30,6 +40,27 @@ class PreCheckScreen(QDialog):
         else:
             return None
 
+    def checkAWSCLI(self):
+        try:
+            subprocess.check_output(["aws2", "--version"], stderr=subprocess.STDOUT)
+            return True
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            self.updateCheckLabel(False)
+            return False
+
+    def updateCheckLabel(self, awsCliFound=True):
+        if awsCliFound:
+            self.checkLabel.setText("✓ AWS CLI tool found.")
+        else:
+            self.checkLabel.setText(
+                "✕ AWS CLI tool not found. AWS CLI tool is not installed. "
+                "Please install it to proceed.<br>Installation instructions: "
+                "<a href='https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'>AWS CLI Installation Guide</a>"
+            )
+            self.checkLabel.setOpenExternalLinks(True)
+            if not hasattr(self, "retryButton"):
+                self.showRetryButton()
+
     def checkConfig(self):
         config = configparser.ConfigParser()
         if self.config_path and os.path.exists(self.config_path):
@@ -37,16 +68,32 @@ class PreCheckScreen(QDialog):
             if config.has_section("profile for-sso") and config.has_section(
                 "sso-session my-sso"
             ):
-                self.checkLabel.setText("✓ AWS config file found and valid.")
-                self.showContinueScreen()
-                if hasattr(self, "submitButton"):
-                    self.submitButton.hide()
+                self.checkLabel.setText(
+                    self.checkLabel.text() + "<br>✓ AWS config file found and valid."
+                )
+                if self.awsCliCheckResult:
+                    self.showContinueScreen()
             else:
-                self.checkLabel.setText("✕ AWS config file found but invalid.")
+                self.checkLabel.setText(
+                    self.checkLabel.text() + "<br>✕ AWS config file found but invalid."
+                )
                 self.requestConfigInput()
         else:
-            self.checkLabel.setText("✕ AWS config files not found.")
+            self.checkLabel.setText(
+                self.checkLabel.text() + "<br>✕ AWS config files not found."
+            )
             self.requestConfigInput()
+
+    def showRetryButton(self):
+        layout = self.layout()
+        self.retryButton = QPushButton("Retry", self)
+        self.retryButton.clicked.connect(self.retryCheck)
+        layout.addWidget(self.retryButton)
+
+    def retryCheck(self):
+        self.awsCliCheckResult = self.checkAWSCLI()
+        self.updateCheckLabel(self.awsCliCheckResult)
+        self.checkConfig()
 
     def requestConfigInput(self):
         layout = self.layout()
