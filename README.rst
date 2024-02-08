@@ -40,7 +40,7 @@ Usage
 Development
 -----------
 
-- Make utility ([Make for Windows](https://gnuwin32.sourceforge.net/packages/make.htm), Make for Linux and Mac is usually pre-installed)
+- Make utility
 
 Set up the environment using the provided Makefile. Follow these steps:
 
