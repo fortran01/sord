@@ -18,10 +18,6 @@ sord
 
 The `sord` tool is used for signing in to AWS SSO and accessing EC2 machines via RDP.
 
-
-* Free software: MIT license
-
-
 Features
 --------
 
