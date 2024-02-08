@@ -38,7 +38,9 @@ class PreCheckScreen(QDialog):
                 "sso-session my-sso"
             ):
                 self.checkLabel.setText("✓ AWS config file found and valid.")
-                self.accept()
+                self.showContinueScreen()
+                if hasattr(self, "submitButton"):
+                    self.submitButton.hide()
             else:
                 self.checkLabel.setText("✕ AWS config file found but invalid.")
                 self.requestConfigInput()
@@ -71,9 +73,9 @@ class PreCheckScreen(QDialog):
         )
         layout.addWidget(self.ssoUrlInput)
 
-        submitButton = QPushButton("Submit", self)
-        submitButton.clicked.connect(self.onSubmit)
-        layout.addWidget(submitButton)
+        self.submitButton = QPushButton("Submit", self)
+        self.submitButton.clicked.connect(self.onSubmit)
+        layout.addWidget(self.submitButton)
 
     def onSubmit(self):
         account_id = self.accountIdInput.text()
@@ -99,6 +101,13 @@ class PreCheckScreen(QDialog):
             "sso-session my-sso", "sso_registration_scopes", "sso:account:access"
         )
 
-        with open(self.config_path, "a") as configfile:  # Append to the config file
+        with open(self.config_path, "w") as configfile:  # Append to the config file
             config.write(configfile)
-        self.accept()
+
+        self.checkConfig()  # Recheck the configuration after submission
+
+    def showContinueScreen(self):
+        layout = self.layout()
+        continueButton = QPushButton("Continue", self)
+        continueButton.clicked.connect(self.accept)
+        layout.addWidget(continueButton)
