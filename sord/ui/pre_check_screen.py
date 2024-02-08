@@ -42,7 +42,7 @@ class PreCheckScreen(QDialog):
 
     def checkAWSCLI(self):
         try:
-            subprocess.check_output(["aws2", "--version"], stderr=subprocess.STDOUT)
+            subprocess.check_output(["aws", "--version"], stderr=subprocess.STDOUT)
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
             self.updateCheckLabel(False)
@@ -110,9 +110,18 @@ class PreCheckScreen(QDialog):
         )
         layout.addWidget(self.roleNameInput)
 
-        self.regionInput = QLineEdit(self)
-        self.regionInput.setPlaceholderText("Enter region (default us-west-2)")
-        layout.addWidget(self.regionInput)
+        self.ssoRegionInput = QLineEdit(self)
+        self.ssoRegionInput.setPlaceholderText(
+            "Enter the SSO region (default us-east-2)"
+        )
+        layout.addWidget(self.ssoRegionInput)
+
+        # Ask for profile region input
+        self.profileRegionInput = QLineEdit(self)
+        self.profileRegionInput.setPlaceholderText(
+            "Enter the AWS Account region (default us-west-2)"
+        )
+        layout.addWidget(self.profileRegionInput)
 
         self.ssoUrlInput = QLineEdit(self)
         self.ssoUrlInput.setPlaceholderText(
@@ -127,7 +136,14 @@ class PreCheckScreen(QDialog):
     def onSubmit(self):
         account_id = self.accountIdInput.text()
         role_name = self.roleNameInput.text()
-        region = self.regionInput.text() if self.regionInput.text() else "us-west-2"
+        sso_region = (
+            self.ssoRegionInput.text() if self.ssoRegionInput.text() else "us-east-2"
+        )
+        profile_region = (
+            self.profileRegionInput.text()
+            if self.profileRegionInput.text()
+            else "us-west-2"
+        )
         sso_start_url = self.ssoUrlInput.text()
 
         config = configparser.ConfigParser()
@@ -137,12 +153,12 @@ class PreCheckScreen(QDialog):
         config.set("profile for-sso", "sso_session", "my-sso")
         config.set("profile for-sso", "sso_account_id", account_id)
         config.set("profile for-sso", "sso_role_name", role_name)
-        config.set("profile for-sso", "region", region)
+        config.set("profile for-sso", "region", profile_region)
         config.set("profile for-sso", "output", "json")
 
         if not config.has_section("sso-session my-sso"):
             config.add_section("sso-session my-sso")
-        config.set("sso-session my-sso", "sso_region", region)
+        config.set("sso-session my-sso", "sso_region", sso_region)
         config.set("sso-session my-sso", "sso_start_url", sso_start_url)
         config.set(
             "sso-session my-sso", "sso_registration_scopes", "sso:account:access"
