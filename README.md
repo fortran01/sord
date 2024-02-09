@@ -5,7 +5,7 @@ The `sord` tool is used for signing in to AWS SSO and accessing EC2 machines via
 ## Features
 
 - Filter and display only those EC2 instances that are tagged with "Owner" equal to the email address of the logged-in user.
-- Attributes, such as `${aws:PrincipalTag/Owner}`, from an external Identity Provider, for example, AWS Managed AD, are not available in the session from aws sso login. It appears that the session from AWS SSO in the web uses a combination of federated user and assumed role, whereas the session from aws sso login relies solely on an assumed role. The policy below is designed to work in both scenarios. Notice the use of the `StringLike` condition and the `aws:userid` condition key.
+- Attributes, such as `${aws:PrincipalTag/Owner}`, from an external Identity Provider, for example, AWS Managed AD, are not available in the session from `aws sso login`. It appears that the session from AWS SSO in the web uses a combination of federated user and assumed role, whereas the session from `aws sso login` relies solely on an assumed role. The policy below is designed to work in both scenarios. Notice the use of the `StringLike` condition and the `aws:userid` condition key.
 
 ```json
 {
