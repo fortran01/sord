@@ -43,33 +43,66 @@ class Ec2Screen(QDialog):
         self.refreshTimer.start(10000)  # Refresh every 10 seconds
 
     def populate_ec2_instances(self):
-        self.ec2ListWidget.clear()  # Clear the list before populating
-        instances = self.ec2_client.get_ec2_instances_for_owner()
-        for reservation in instances["Reservations"]:
-            for instance in reservation["Instances"]:
-                instance_id = instance["InstanceId"]
-                instance_name = next(
-                    (tag["Value"] for tag in instance["Tags"] if tag["Key"] == "Name"),
-                    "No Name",
-                )
-                instance_state = instance["State"]["Name"]
-                display_text = f"{instance_name} ({instance_id}) - {instance_state}"
-                self.ec2ListWidget.addItem(display_text)
+        try:
+            self.ec2ListWidget.clear()  # Clear the list before populating
+            instances = self.ec2_client.get_ec2_instances_for_owner()
+            for reservation in instances["Reservations"]:
+                for instance in reservation["Instances"]:
+                    instance_id = instance["InstanceId"]
+                    instance_name = next(
+                        (
+                            tag["Value"]
+                            for tag in instance["Tags"]
+                            if tag["Key"] == "Name"
+                        ),
+                        "No Name",
+                    )
+                    instance_state = instance["State"]["Name"]
+                    display_text = f"{instance_name} ({instance_id}) - {instance_state}"
+                    self.ec2ListWidget.addItem(display_text)
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to populate EC2 instances: {e}. Please try again.",
+            )
 
     def refresh_ec2_instances_and_reset_timer(self):
-        self.populate_ec2_instances()
+        try:
+            self.populate_ec2_instances()
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to refresh EC2 instances: {e}. Please try again.",
+            )
 
     def handleRDP(self):
-        # Placeholder for RDP connection logic
-        selectedInstance = self.ec2ListWidget.currentItem().text()
-        print(f"Connecting to {selectedInstance} via RDP...")
+        try:
+            selectedInstance = self.ec2ListWidget.currentItem().text()
+            print(f"Connecting to {selectedInstance} via RDP...")
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to initiate RDP connection: {e}. Please try again.",
+            )
 
     def handlePowerToggle(self):
-        currentItemText = self.ec2ListWidget.currentItem().text()
-        instanceIdPattern = r"i-\w+"
-        match = re.search(instanceIdPattern, currentItemText)
-        if match:
-            selectedInstance = match.group()
-            toggle_result = self.ec2_client.toggle_ec2_instance_state(selectedInstance)
-            QMessageBox.information(self, "Status", toggle_result)
-            self.refresh_ec2_instances_and_reset_timer()  # Refresh immediately after toggling
+        try:
+            currentItemText = self.ec2ListWidget.currentItem().text()
+            instanceIdPattern = r"i-\w+"
+            match = re.search(instanceIdPattern, currentItemText)
+            if match:
+                selectedInstance = match.group()
+                toggle_result = self.ec2_client.toggle_ec2_instance_state(
+                    selectedInstance
+                )
+                QMessageBox.information(self, "Status", toggle_result)
+                self.refresh_ec2_instances_and_reset_timer()  # Refresh immediately after toggling
+        except AttributeError as e:
+            QMessageBox.critical(
+                self,  # Assuming 'self' is a QWidget, adjust as necessary
+                "Error",
+                f"An unexpected error occurred: {e}. Please try again.",
+            )

@@ -1,5 +1,4 @@
 import boto3
-import subprocess
 
 
 class EC2Client:
