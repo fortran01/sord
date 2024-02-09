@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtGui import QTextCursor
+from ..ec2 import EC2Client  # Import EC2Client to use check_sso_session_validity
 
 
 class LoginWorker(QThread):
@@ -66,11 +67,22 @@ class LoginScreen(QDialog):
         self.setLayout(layout)
 
     def handleLogin(self):
-        self.loginWorker = LoginWorker()
-        self.loginWorker.output_signal.connect(self.onLoginOutput)
-        self.loginWorker.finished_signal.connect(self.onLoginFinished)
-        self.loginWorker.start()
-        self.buttonLogin.hide()  # Hide the login button immediately after starting the login process
+        ec2_client = EC2Client()
+        if ec2_client.check_sso_session_validity():
+            self.outputTextEdit.insertPlainText(
+                "Valid SSO session found. No need to login again.\n"
+            )
+            self.buttonLogin.setText("Continue")  # Change button text to "Continue"
+            self.buttonLogin.clicked.disconnect()  # Disconnect the previous slot
+            self.buttonLogin.clicked.connect(
+                self.accept
+            )  # Connect to accept the dialog
+        else:
+            self.loginWorker = LoginWorker()
+            self.loginWorker.output_signal.connect(self.onLoginOutput)
+            self.loginWorker.finished_signal.connect(self.onLoginFinished)
+            self.loginWorker.start()
+            self.buttonLogin.hide()  # Hide the login button immediately after starting the login process
 
     def onLoginOutput(self, output):
         self.outputTextEdit.moveCursor(QTextCursor.MoveOperation.End)
@@ -87,7 +99,7 @@ class LoginScreen(QDialog):
         if retcode == 0:  # Check if the login process finished successfully
             self.continueButton = QPushButton(
                 "Continue", self
-            )  # Create a continue button
+            )  # Create a continue button if it does not exist
             self.layout().addWidget(self.continueButton)
             self.continueButton.clicked.connect(
                 self.accept

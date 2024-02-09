@@ -23,6 +23,7 @@ install_requires = [
     "pip",
     "click",
     "pyQt6",
+    "boto3",
 ]
 install_requires_win_only = [
     "colorama>=0.2.4",
