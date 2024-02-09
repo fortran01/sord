@@ -1,31 +1,17 @@
-====
-sord
-====
+# sord
 
-
-.. image:: https://img.shields.io/pypi/v/sord.svg
-        :target: https://pypi.python.org/pypi/sord
-
-.. image:: https://img.shields.io/travis/fortran01/sord.svg
-        :target: https://travis-ci.com/fortran01/sord
-
-.. image:: https://readthedocs.org/projects/sord/badge/?version=latest
-        :target: https://sord.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
-
-
+![PyPI Version](https://img.shields.io/pypi/v/sord.svg)(https://pypi.python.org/pypi/sord)
+![Travis CI Build Status](https://img.shields.io/travis/fortran01/sord.svg)(https://travis-ci.com/fortran01/sord)
+![Documentation Status](https://readthedocs.org/projects/sord/badge/?version=latest)(https://sord.readthedocs.io/en/latest/?version=latest)
 
 The `sord` tool is used for signing in to AWS SSO and accessing EC2 machines via RDP.
 
-Features
---------
+## Features
 
-- Filter and display only those EC2 instances that are tagged with "Owner" equal to the email address of the logged-in user
+- Filter and display only those EC2 instances that are tagged with "Owner" equal to the email address of the logged-in user.
+- Attributes, such as `${aws:PrincipalTag/Owner}`, from an external Identity Provider, for example, AWS Managed AD, are not available in the session from aws sso login. It appears that the session from AWS SSO in the web uses a combination of federated user and assumed role, whereas the session from aws sso login relies solely on an assumed role. The policy below is designed to work in both scenarios. Notice the use of the StringLike condition and the aws:userid condition key.
 
-- Attributes, such as ${aws:PrincipalTag/Owner}, from an external Identity Provider, for example, AWS Managed AD, are not available in the session from aws sso login. It appears that the session from AWS SSO in the web uses a combination of federated user and assumed role, whereas the session from aws sso login relies solely on an assumed role. The policy below is designed to work in both scenarios. Notice the use of the StringLike condition and the aws:userid condition key.
-
-.. code-block:: json
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -56,19 +42,17 @@ Features
         }
     ]
 }
+```
 
-Requirements
-------------
+## Requirements
 
-* TODO
+- TODO
 
-Usage
------
+## Usage
 
-* TODO
+- TODO
 
-Development
------------
+## Development
 
 - Make utility
 
@@ -81,11 +65,6 @@ Set up the environment using the provided Makefile. Follow these steps:
 5. Run the tool for example by running `python -m sord --help`.
 6. Exit the virtual environment by running `deactivate`.
 
+## Credits
 
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
