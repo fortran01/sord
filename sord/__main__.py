@@ -1,21 +1,56 @@
 import sys
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox
 from .ui.pre_check_screen import PreCheckScreen
 from .ui.login_screen import LoginScreen
 from .ui.ec2_screen import Ec2Screen
 
 
-def main():
-    app = QApplication(sys.argv)
-    preCheck = PreCheckScreen()
+class MainApplicationWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("AWS Utility")
+        self.setGeometry(100, 100, 500, 400)
 
-    if preCheck.exec() == PreCheckScreen.DialogCode.Accepted:
-        login = LoginScreen()
-        if login.exec() == LoginScreen.DialogCode.Accepted:
-            ec2Screen = Ec2Screen()
-            ec2Screen.show()
-            sys.exit(app.exec())
+        self.stack = QVBoxLayout()
+
+        self.preCheckScreen = PreCheckScreen()
+        self.loginScreen = LoginScreen()
+
+        self.preCheckScreen.accepted.connect(self.showLoginScreen)
+        self.loginScreen.accepted.connect(self.showEc2Screen)
+
+        self.stack.addWidget(self.preCheckScreen)
+
+        centralWidget = QWidget()
+        centralWidget.setLayout(self.stack)
+        self.setCentralWidget(centralWidget)
+
+        self.preCheckScreen.startPreCheck()  # Add this line to start the precheck
+
+    def showLoginScreen(self):
+        self.preCheckScreen.setParent(None)
+        self.stack.addWidget(self.loginScreen)
+
+    def showEc2Screen(self):
+        self.loginScreen.setParent(None)
+        self.ec2Screen = Ec2Screen()
+        self.stack.addWidget(self.ec2Screen)
+
+
+def main():
+    try:
+        app = QApplication(sys.argv)
+        mainWindow = MainApplicationWindow()
+        mainWindow.show()
+        sys.exit(app.exec())
+    except Exception as e:
+        QMessageBox.critical(
+            None,
+            "Application Error",
+            f"An error occurred: {str(e)}\n\nThe application will now exit.",
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

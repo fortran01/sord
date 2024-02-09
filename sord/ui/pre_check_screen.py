@@ -3,16 +3,18 @@ import os
 import configparser
 import subprocess
 from PyQt6.QtWidgets import (
-    QDialog,
+    QWidget,
     QVBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
-    QMessageBox,
 )
+from PyQt6.QtCore import pyqtSignal, QObject
 
 
-class PreCheckScreen(QDialog):
+class PreCheckScreen(QWidget):
+    accepted = pyqtSignal()
+
     def __init__(self, parent=None):
         super(PreCheckScreen, self).__init__(parent)
         self.setWindowTitle("Pre-Check")
@@ -28,9 +30,25 @@ class PreCheckScreen(QDialog):
         self.setLayout(layout)
 
         self.config_path = self.determine_config_path()
+        self.retryButton = None
+        self.accountIdInput = None
+        self.roleNameInput = None
+        self.ssoRegionInput = None
+        self.profileRegionInput = None
+        self.ssoUrlInput = None
+        self.submitButton = None
+
+    def startPreCheck(self):
+        self.showRetryButton()
+        self.performChecks()
+
+    def performChecks(self):
         self.awsCliCheckResult = self.checkAWSCLI()
         self.updateCheckLabel(self.awsCliCheckResult)
-        self.checkConfig()
+        self.configCheckResult = self.checkConfig()
+
+        if self.awsCliCheckResult and self.configCheckResult:
+            self.accepted.emit()
 
     def determine_config_path(self):
         if sys.platform.startswith(("linux", "darwin")):
@@ -58,7 +76,7 @@ class PreCheckScreen(QDialog):
                 "<a href='https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'>AWS CLI Installation Guide</a>"
             )
             self.checkLabel.setOpenExternalLinks(True)
-            if not hasattr(self, "retryButton"):
+            if not self.retryButton:
                 self.showRetryButton()
 
     def checkConfig(self):
@@ -71,67 +89,69 @@ class PreCheckScreen(QDialog):
                 self.checkLabel.setText(
                     self.checkLabel.text() + "<br>✓ AWS config file found and valid."
                 )
-                if self.awsCliCheckResult:
-                    self.showContinueScreen()
+                return True
             else:
                 self.checkLabel.setText(
                     self.checkLabel.text() + "<br>✕ AWS config file found but invalid."
                 )
                 self.requestConfigInput()
+                return False
         else:
             self.checkLabel.setText(
                 self.checkLabel.text() + "<br>✕ AWS config files not found."
             )
             self.requestConfigInput()
+            return False
 
     def showRetryButton(self):
         layout = self.layout()
-        self.retryButton = QPushButton("Retry", self)
-        self.retryButton.clicked.connect(self.retryCheck)
-        layout.addWidget(self.retryButton)
-
-    def retryCheck(self):
-        self.awsCliCheckResult = self.checkAWSCLI()
-        self.updateCheckLabel(self.awsCliCheckResult)
-        self.checkConfig()
+        if not self.retryButton:
+            self.retryButton = QPushButton("Check Again", self)
+            self.retryButton.clicked.connect(self.performChecks)
+            layout.addWidget(self.retryButton)
 
     def requestConfigInput(self):
         layout = self.layout()
 
-        self.accountIdInput = QLineEdit(self)
-        self.accountIdInput.setPlaceholderText(
-            "Enter SSO account id (e.g. 111122223333)"
-        )
-        layout.addWidget(self.accountIdInput)
+        if not self.accountIdInput:
+            self.accountIdInput = QLineEdit(self)
+            self.accountIdInput.setPlaceholderText(
+                "Enter SSO account id (e.g. 111122223333)"
+            )
+            layout.addWidget(self.accountIdInput)
 
-        self.roleNameInput = QLineEdit(self)
-        self.roleNameInput.setPlaceholderText(
-            "Enter SSO role name (e.g. AWSReadOnlyAccess)"
-        )
-        layout.addWidget(self.roleNameInput)
+        if not self.roleNameInput:
+            self.roleNameInput = QLineEdit(self)
+            self.roleNameInput.setPlaceholderText(
+                "Enter SSO role name (e.g. AWSReadOnlyAccess)"
+            )
+            layout.addWidget(self.roleNameInput)
 
-        self.ssoRegionInput = QLineEdit(self)
-        self.ssoRegionInput.setPlaceholderText(
-            "Enter the SSO region (default us-east-2)"
-        )
-        layout.addWidget(self.ssoRegionInput)
+        if not self.ssoRegionInput:
+            self.ssoRegionInput = QLineEdit(self)
+            self.ssoRegionInput.setPlaceholderText(
+                "Enter the SSO region (default us-east-2)"
+            )
+            layout.addWidget(self.ssoRegionInput)
 
-        # Ask for profile region input
-        self.profileRegionInput = QLineEdit(self)
-        self.profileRegionInput.setPlaceholderText(
-            "Enter the AWS Account region (default us-west-2)"
-        )
-        layout.addWidget(self.profileRegionInput)
+        if not self.profileRegionInput:
+            self.profileRegionInput = QLineEdit(self)
+            self.profileRegionInput.setPlaceholderText(
+                "Enter the AWS Account region (default us-west-2)"
+            )
+            layout.addWidget(self.profileRegionInput)
 
-        self.ssoUrlInput = QLineEdit(self)
-        self.ssoUrlInput.setPlaceholderText(
-            "Enter SSO start URL (e.g. https://provided-domain.awsapps.com/start)"
-        )
-        layout.addWidget(self.ssoUrlInput)
+        if not self.ssoUrlInput:
+            self.ssoUrlInput = QLineEdit(self)
+            self.ssoUrlInput.setPlaceholderText(
+                "Enter SSO start URL (e.g. https://provided-domain.awsapps.com/start)"
+            )
+            layout.addWidget(self.ssoUrlInput)
 
-        self.submitButton = QPushButton("Submit", self)
-        self.submitButton.clicked.connect(self.onSubmit)
-        layout.addWidget(self.submitButton)
+        if not self.submitButton:
+            self.submitButton = QPushButton("Submit", self)
+            self.submitButton.clicked.connect(self.onSubmit)
+            layout.addWidget(self.submitButton)
 
     def onSubmit(self):
         account_id = self.accountIdInput.text()
@@ -167,10 +187,4 @@ class PreCheckScreen(QDialog):
         with open(self.config_path, "w") as configfile:  # Append to the config file
             config.write(configfile)
 
-        self.checkConfig()  # Recheck the configuration after submission
-
-    def showContinueScreen(self):
-        layout = self.layout()
-        continueButton = QPushButton("Continue", self)
-        continueButton.clicked.connect(self.accept)
-        layout.addWidget(continueButton)
+        self.performChecks()  # Recheck the configuration after submission

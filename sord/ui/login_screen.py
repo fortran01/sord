@@ -2,7 +2,7 @@ import subprocess
 import webbrowser
 import re
 from PyQt6.QtWidgets import (
-    QDialog,
+    QWidget,
     QVBoxLayout,
     QLabel,
     QPushButton,
@@ -41,7 +41,9 @@ class LoginWorker(QThread):
             self.output_signal.emit(f"SSO login failed: {e.output}")
 
 
-class LoginScreen(QDialog):
+class LoginScreen(QWidget):
+    accepted = pyqtSignal()  # Add this signal to indicate completion
+
     def __init__(self, parent=None):
         super(LoginScreen, self).__init__(parent)
         self.setWindowTitle("AWS SSO Login")
@@ -75,7 +77,7 @@ class LoginScreen(QDialog):
             self.buttonLogin.setText("Continue")  # Change button text to "Continue"
             self.buttonLogin.clicked.disconnect()  # Disconnect the previous slot
             self.buttonLogin.clicked.connect(
-                self.accept
+                self.emitAccepted
             )  # Connect to accept the dialog
         else:
             self.loginWorker = LoginWorker()
@@ -97,10 +99,15 @@ class LoginScreen(QDialog):
 
     def onLoginFinished(self, retcode):
         if retcode == 0:  # Check if the login process finished successfully
-            self.continueButton = QPushButton(
-                "Continue", self
-            )  # Create a continue button if it does not exist
-            self.layout().addWidget(self.continueButton)
-            self.continueButton.clicked.connect(
-                self.accept
-            )  # Connect the continue button to accept the dialog
+            self.accepted.emit()  # Emit accepted signal instead of self.accept()
+            if not hasattr(
+                self, "continueButton"
+            ):  # Check if the continue button does not exist
+                self.continueButton = QPushButton("Continue", self)
+                self.layout().addWidget(self.continueButton)
+                self.continueButton.clicked.connect(
+                    self.emitAccepted
+                )  # Connect the continue button to a method that emits accepted
+
+    def emitAccepted(self):
+        self.accepted.emit()  # Emit the accepted signal
