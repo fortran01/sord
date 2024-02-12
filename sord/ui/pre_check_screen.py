@@ -45,10 +45,17 @@ class PreCheckScreen(QWidget):
 
     def performChecks(self):
         self.awsCliCheckResult = self.checkAWSCLI()
-        self.updateCheckLabel(self.awsCliCheckResult)
+        self.sessionManagerPluginCheckResult = self.checkSessionManagerPlugin()
+        self.updateCheckLabel(
+            self.awsCliCheckResult, self.sessionManagerPluginCheckResult
+        )
         self.configCheckResult = self.checkConfig()
 
-        if self.awsCliCheckResult and self.configCheckResult:
+        if (
+            self.awsCliCheckResult
+            and self.sessionManagerPluginCheckResult
+            and self.configCheckResult
+        ):
             self.accepted.emit()
 
     def determine_config_path(self):
@@ -72,10 +79,21 @@ class PreCheckScreen(QWidget):
             subprocess.check_output(["aws", "--version"], stderr=subprocess.STDOUT)
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
-            self.updateCheckLabel(False)
             return False
 
-    def updateCheckLabel(self, awsCliFound=True):
+    def checkSessionManagerPlugin(self):
+        try:
+            output = subprocess.check_output(
+                ["session-manager-plugin"], stderr=subprocess.STDOUT
+            ).decode()
+            return (
+                "The Session Manager plugin was installed successfully. Use the AWS CLI to start a session."
+                in output
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return False
+
+    def updateCheckLabel(self, awsCliFound=True, sessionManagerPluginFound=True):
         try:
             if awsCliFound:
                 self.checkLabel.setText("✓ AWS CLI tool found.")
@@ -84,6 +102,19 @@ class PreCheckScreen(QWidget):
                     "✕ AWS CLI tool not found. AWS CLI tool is not installed. "
                     "Please install it to proceed.<br>Installation instructions: "
                     "<a href='https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'>AWS CLI Installation Guide</a>"
+                )
+                self.checkLabel.setOpenExternalLinks(True)
+                if not self.retryButton:
+                    self.showRetryButton()
+            if sessionManagerPluginFound:
+                self.checkLabel.setText(
+                    self.checkLabel.text() + "<br>✓ Session Manager plugin found."
+                )
+            else:
+                self.checkLabel.setText(
+                    self.checkLabel.text() + "<br>✕ Session Manager plugin not found. "
+                    "Please install it to proceed.<br>Installation instructions: "
+                    "<a href='https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html'>Session Manager Plugin Installation Guide</a>"
                 )
                 self.checkLabel.setOpenExternalLinks(True)
                 if not self.retryButton:
