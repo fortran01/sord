@@ -46,6 +46,7 @@ class Ec2Screen(QDialog):
         try:
             self.ec2ListWidget.clear()  # Clear the list before populating
             instances = self.ec2_client.get_ec2_instances_for_owner()
+            first_item_set = False
             for reservation in instances["Reservations"]:
                 for instance in reservation["Instances"]:
                     instance_id = instance["InstanceId"]
@@ -60,6 +61,9 @@ class Ec2Screen(QDialog):
                     instance_state = instance["State"]["Name"]
                     display_text = f"{instance_name} ({instance_id}) - {instance_state}"
                     self.ec2ListWidget.addItem(display_text)
+                    if not first_item_set:
+                        self.ec2ListWidget.setCurrentRow(0)
+                        first_item_set = True
         except Exception as e:
             QMessageBox.critical(
                 self,
