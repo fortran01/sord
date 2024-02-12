@@ -14,7 +14,18 @@ The `sord` tool is used for signing in to AWS SSO and accessing EC2 machines via
         {
             "Effect": "Allow",
             "Action": [
-                "ec2:DescribeInstances"
+                "ec2:DescribeInstances",
+                "ssm:StartSession",
+                "ssm:TerminateSession",
+                "ssm:DescribeSessions",
+                "ssm:SendCommand",
+                "ssmmessages:CreateControlChannel",
+                "ssmmessages:CreateDataChannel",
+                "ssmmessages:OpenControlChannel",
+                "ssmmessages:OpenDataChannel",
+                "kms:Decrypt",
+                "s3:GetEncryptionConfiguration",
+                "ssm:DescribeInstanceInformation"
             ],
             "Resource": "*"
         },
@@ -22,10 +33,7 @@ The `sord` tool is used for signing in to AWS SSO and accessing EC2 machines via
             "Effect": "Allow",
             "Action": [
                 "ec2:StartInstances",
-                "ec2:StopInstances",
-                "ssm:StartSession",
-                "ssm:TerminateSession",
-                "ssm:DescribeSessions"
+                "ec2:StopInstances"
             ],
             "Resource": "*",
             "Condition": {
