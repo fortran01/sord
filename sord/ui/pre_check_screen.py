@@ -111,8 +111,11 @@ class PreCheckScreen(QWidget):
                 else:
                     self.checkLabel.setText(
                         self.checkLabel.text()
-                        + "<br>✕ AWS config file found but invalid."
+                        + "<br>✕ AWS config file found but invalid. "
+                        + "For more information on configuring your profile with SSO, visit: "
+                        + "<a href='https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html'>AWS CLI SSO Configuration Guide</a>"
                     )
+                    self.checkLabel.setOpenExternalLinks(True)
                     self.requestConfigInput()
                     return False
             else:
