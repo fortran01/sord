@@ -1,12 +1,11 @@
-name: Build Application
+name: Build and Release Application
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -32,8 +31,9 @@ jobs:
         run: |
           pyinstaller --onefile --name sord sord/__main__.py
           
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
         with:
-          name: ${{ matrix.os }}-app
-          path: dist/sord*
+          files: dist/sord*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
