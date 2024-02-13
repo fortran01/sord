@@ -185,6 +185,17 @@ publish-no-test:
 	@echo
 
 ###############################################################################
+# Packaging - PyInstaller
+###############################################################################
+
+pyinstaller-build:
+	@echo $(H1)Running PyInstaller$(H1END)
+	@[ -f $(VENV_BIN)/pyinstaller ] || $(VENV_PIP) install pyinstaller
+	$(VENV_BIN)/pyinstaller --onefile --name=$(PROJECT_NAME) $(PROJECT_NAME)/__main__.py
+	@echo
+
+
+###############################################################################
 # Uninstalling
 ###############################################################################
 

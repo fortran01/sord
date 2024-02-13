@@ -1,8 +1,8 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox
-from .ui.pre_check_screen import PreCheckScreen
-from .ui.login_screen import LoginScreen
-from .ui.ec2_screen import Ec2Screen
+from sord.ui.pre_check_screen import PreCheckScreen
+from sord.ui.login_screen import LoginScreen
+from sord.ui.ec2_screen import Ec2Screen
 
 
 class MainApplicationWindow(QMainWindow):
