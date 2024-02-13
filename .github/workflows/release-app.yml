@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-14, windows-latest]
     steps:
       - uses: actions/checkout@v2
       
@@ -30,7 +30,13 @@ jobs:
           
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --name sord-${{ matrix.os }} sord/__main__.py
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            pyinstaller --onefile --name sord-macos-x86-64 sord/__main__.py
+          elif [ "${{ matrix.os }}" == "macos-14" ]; then
+            pyinstaller --onefile --name sord-macos-arm64 sord/__main__.py
+          else
+            pyinstaller --onefile --name sord-${{ matrix.os }} sord/__main__.py
+          fi
           
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
