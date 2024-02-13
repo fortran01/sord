@@ -36,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-app
-          path: dist/__main__*
+          path: dist/sord*
