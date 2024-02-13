@@ -30,14 +30,16 @@ jobs:
           
       - name: Build with PyInstaller
         run: |
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
             pyinstaller --onefile --name sord-macos-x86-64 sord/__main__.py
-          elif [[ "${{ matrix.os }}" == "macos-14" ]]; then
+          elif [ "${{ matrix.os }}" = "macos-14" ]; then
             pyinstaller --onefile --name sord-macos-arm64 sord/__main__.py
+          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
+            pyinstaller --onefile --name sord-windows-latest sord/__main__.py
           else
             pyinstaller --onefile --name sord-${{ matrix.os }} sord/__main__.py
           fi
-          
+        shell: bash
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
