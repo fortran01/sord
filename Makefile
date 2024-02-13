@@ -11,10 +11,17 @@ H1END=" \#\#\# \033[0m\n"
 # Only used to create our venv.
 SYSTEM_PYTHON=python3
 
-VENV_ROOT=venv
-VENV_BIN=$(VENV_ROOT)/bin
-VENV_PIP=$(VENV_BIN)/pip
-VENV_PYTHON=$(VENV_BIN)/python
+ifeq ($(OS),Windows_NT)
+	VENV_ROOT=venv
+	VENV_BIN=$(VENV_ROOT)\Scripts
+	VENV_PIP=$(VENV_BIN)\pip
+	VENV_PYTHON=$(VENV_BIN)\python
+else
+	VENV_ROOT=venv
+	VENV_BIN=$(VENV_ROOT)/bin
+	VENV_PIP=$(VENV_BIN)/pip
+	VENV_PYTHON=$(VENV_BIN)/python
+endif
 
 
 export PATH := $(VENV_BIN):$(PATH)
