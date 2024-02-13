@@ -25,6 +25,7 @@ jobs:
           
       - name: Install dependencies
         run: make install
+        shell: bash
           
       - name: Build with PyInstaller
         run: |
