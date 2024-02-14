@@ -26,8 +26,7 @@ jobs:
       - name: Install dependencies and check PyInstaller
         run: |
           make install
-        shell: bash
-          
+        shell: bash         
       - name: Build with PyInstaller
         run: |
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
@@ -50,7 +49,7 @@ jobs:
               ;;
           esac
         shell: bash
-        - name: Upload Release Asset
+      - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
           files: dist/sord*
