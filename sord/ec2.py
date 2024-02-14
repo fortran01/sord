@@ -106,9 +106,11 @@ class EC2Client:
             command = (
                 f"aws ssm start-session --target {instance_id} "
                 f"--document-name AWS-StartPortForwardingSession "
-                f"--parameters 'localPortNumber={local_port},portNumber=3389' "
+                f'--parameters "{{\\"localPortNumber\\":[\\"{local_port}\\"], \\"portNumber\\":[\\"3389\\"]}}" '
                 f"--profile {self._profile_name}"
             )
+            print(f"Starting port forwarding session on local port {local_port}...")
+            print(f"Command: {command}")
             process = subprocess.Popen(command, shell=True)
             self.processes.append(process)
             atexit.register(self._kill_process, process)
