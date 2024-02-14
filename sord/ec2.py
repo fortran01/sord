@@ -149,11 +149,14 @@ class EC2Client:
             check_process = subprocess.run(
                 check_command, shell=True, stdout=subprocess.PIPE
             )
-        try:
-            if check_process.stdout:
-                subprocess.run(force_kill_command, shell=True, check=True)
-                print("Session Manager Plugin processes terminated forcefully.")
-            else:
-                print("Session Manager Plugin processes terminated successfully.")
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to terminate Session Manager Plugin processes: {e}")
+        if "check_process" in locals():
+            try:
+                if check_process.stdout:
+                    subprocess.run(force_kill_command, shell=True, check=True)
+                    print("Session Manager Plugin processes terminated forcefully.")
+                else:
+                    print("Session Manager Plugin processes terminated successfully.")
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to terminate Session Manager Plugin processes: {e}")
+        else:
+            print("No Session Manager Plugin processes found to terminate.")
