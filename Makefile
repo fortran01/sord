@@ -65,7 +65,7 @@ install-reqs:
 	@echo $(H1)Installing dev requirements$(H1END)
 	$(VENV_PIP) install --upgrade '.[dev]' '.[test]'
 
-	@echo $(H1)Installing madb$(H1END)
+	@echo $(H1)Installing $(PROJECT_NAME)$(H1END)
 	$(VENV_PIP) install --upgrade --editable .
 
 	@echo
@@ -90,7 +90,7 @@ venv:
 	@echo
 	@echo done.
 	@echo
-	@echo To active it manually, run:
+	@echo To activate it manually, run:
 	@echo
 	@echo "    source $(VENV_BIN)/activate"
 	@echo

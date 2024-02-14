@@ -23,17 +23,20 @@ jobs:
         with:
           python-version: '3.x'
           
-      - name: Install dependencies and check PyInstaller
+      - name: Install dependencies
         run: |
           make install
-        shell: bash         
-      - name: Build with PyInstaller
+        shell: bash 
+      - name: Activate virtual environment
         run: |
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             ./venv/Scripts/activate
           else
             source ./venv/bin/activate
           fi
+        shell: bash        
+      - name: Build with PyInstaller
+        run: |
           case "${{ matrix.os }}" in
             "macos-latest")
               pyinstaller --onefile --name sord-macos-x86-64 sord/__main__.py
