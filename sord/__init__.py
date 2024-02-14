@@ -5,4 +5,4 @@ sord: The `sord` tool is used for signing in to AWS SSO and accessing EC2 machin
 
 __author__ = """Prem Rara"""
 __email__ = "p@rara.dev"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
