@@ -26,22 +26,31 @@ jobs:
       - name: Install dependencies and check PyInstaller
         run: |
           make install
-          pip install pyinstaller
         shell: bash
           
       - name: Build with PyInstaller
         run: |
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            pyinstaller --onefile --name sord-macos-x86-64 sord/__main__.py
-          elif [ "${{ matrix.os }}" = "macos-14" ]; then
-            pyinstaller --onefile --name sord-macos-arm64 sord/__main__.py
-          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
-            pyinstaller --onefile --name sord-windows-latest sord/__main__.py
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            ./venv/Scripts/activate
           else
-            pyinstaller --onefile --name sord-${{ matrix.os }} sord/__main__.py
+            source ./venv/bin/activate
           fi
+          case "${{ matrix.os }}" in
+            "macos-latest")
+              pyinstaller --onefile --name sord-macos-x86-64 sord/__main__.py
+              ;;
+            "macos-14")
+              pyinstaller --onefile --name sord-macos-arm64 sord/__main__.py
+              ;;
+            "windows-latest")
+              pyinstaller --onefile --name sord-windows-latest sord/__main__.py
+              ;;
+            *)
+              pyinstaller --onefile --name sord-${{ matrix.os }} sord/__main__.py
+              ;;
+          esac
         shell: bash
-      - name: Upload Release Asset
+        - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
           files: dist/sord*
