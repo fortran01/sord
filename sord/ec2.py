@@ -144,12 +144,12 @@ class EC2Client:
             soft_kill_command = "pkill session-manager-plugin"
             check_command = "pgrep session-manager-plugin"
             force_kill_command = "pkill -9 session-manager-plugin"
-        try:
             subprocess.run(soft_kill_command, shell=True, check=True)
             time.sleep(2)  # Wait for a little while before rechecking
             check_process = subprocess.run(
                 check_command, shell=True, stdout=subprocess.PIPE
             )
+        try:
             if check_process.stdout:
                 subprocess.run(force_kill_command, shell=True, check=True)
                 print("Session Manager Plugin processes terminated forcefully.")
