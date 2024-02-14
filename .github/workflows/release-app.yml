@@ -27,28 +27,27 @@ jobs:
         run: |
           make install
         shell: bash 
-      - name: Activate virtual environment
+      - name: Build with PyInstaller
         run: |
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             ./venv/Scripts/activate
+            PYINSTALLER="./venv/Scripts/pyinstaller.exe"
           else
             source ./venv/bin/activate
+            PYINSTALLER="./venv/bin/pyinstaller"
           fi
-        shell: bash        
-      - name: Build with PyInstaller
-        run: |
           case "${{ matrix.os }}" in
             "macos-latest")
-              pyinstaller --onefile --name sord-macos-x86-64 sord/__main__.py
+              $PYINSTALLER --onefile --name sord-macos-x86-64 sord/__main__.py
               ;;
             "macos-14")
-              pyinstaller --onefile --name sord-macos-arm64 sord/__main__.py
+              $PYINSTALLER --onefile --name sord-macos-arm64 sord/__main__.py
               ;;
             "windows-latest")
-              pyinstaller --onefile --name sord-windows-latest sord/__main__.py
+              $PYINSTALLER --onefile --name sord-windows-latest sord/__main__.py
               ;;
             *)
-              pyinstaller --onefile --name sord-${{ matrix.os }} sord/__main__.py
+              $PYINSTALLER --onefile --name sord-${{ matrix.os }} sord/__main__.py
               ;;
           esac
         shell: bash
