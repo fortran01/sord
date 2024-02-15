@@ -64,6 +64,7 @@ cd sord-main
 make install
 source venv/bin/activate
 make pyinstaller-build
+./dist/sord # Run the tool
 ```
 
 ## Development
