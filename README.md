@@ -50,11 +50,21 @@ The `sord` tool is used for signing in to AWS SSO and accessing EC2 machines via
 
 ## Requirements
 
-- TODO
+- [AWS CLI Tool](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [Session Manager Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
 
 ## Usage
 
-- TODO
+Download the latest release from the [releases page](https://github.com/fortran01/sord/releases). If none of the releases are compatible with your system, you can build the tool from source.
+
+```bash
+curl -L https://github.com/fortran01/sord/archive/refs/heads/main.zip -o sord-main.zip
+unzip sord-main.zip
+cd sord-main
+make install
+source venv/bin/activate
+make pyinstaller-build
+```
 
 ## Development
 
