@@ -26,10 +26,19 @@ class EC2Client:
     def get_ec2_instances_for_owner(self):
         if not self.email:
             self.get_logged_in_user_email()
-        instances = self.client.describe_instances(
-            Filters=[{"Name": "tag:Owner", "Values": [self.email]}]
-        )
-        return instances
+        # Retrieve all instances first
+        all_instances = self.client.describe_instances()
+        matching_instances = []
+        for reservation in all_instances.get('Reservations', []):
+            for instance in reservation.get('Instances', []):
+                # Iterate through all tags to find the 'Owner' tag
+                for tag in instance.get('Tags', []):
+                    if tag['Key'] == 'Owner':
+                        # Check if the current user's email is in the 'Owner' tag value
+                        if self.email in tag['Value'].split(', '):
+                            matching_instances.append(instance)
+                            break  # No need to check other tags for this instance
+        return {"Reservations": [{"Instances": matching_instances}]}
 
     def check_sso_session_validity(self):
         try:
