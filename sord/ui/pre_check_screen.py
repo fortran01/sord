@@ -261,6 +261,9 @@ class PreCheckScreen(QWidget):
                 "sso-session my-sso", "sso_registration_scopes", "sso:account:access"
             )
 
+            # Ensure parent directories exist
+            os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
+
             with open(self.config_path, "w") as configfile:  # Append to the config file
                 config.write(configfile)
 
