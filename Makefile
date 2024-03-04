@@ -179,6 +179,10 @@ lint: lint/flake8 ## check style
 build:
 	rm -rf build/ dist/
 	$(VENV_PYTHON) -m build --sdist --wheel --outdir dist/
+	@echo $(H1)Running PyInstaller$(H1END)
+	@[ -f $(VENV_BIN)/pyinstaller ] || $(VENV_PIP) install pyinstaller
+	$(VENV_BIN)/pyinstaller --onefile --name=$(PROJECT_NAME) $(PROJECT_NAME)/__main__.py
+	@echo
 
 publish: test-all publish-no-test
 
@@ -190,17 +194,6 @@ publish-no-test:
 	make twine-check
 	$(VENV_BIN)/twine upload --repository={PROJECT_NAME} dist/*
 	@echo
-
-###############################################################################
-# Packaging - PyInstaller
-###############################################################################
-
-pyinstaller-build:
-	@echo $(H1)Running PyInstaller$(H1END)
-	@[ -f $(VENV_BIN)/pyinstaller ] || $(VENV_PIP) install pyinstaller
-	$(VENV_BIN)/pyinstaller --onefile --name=$(PROJECT_NAME) $(PROJECT_NAME)/__main__.py
-	@echo
-
 
 ###############################################################################
 # Uninstalling
