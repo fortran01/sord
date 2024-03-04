@@ -246,3 +246,13 @@ installation-docs:
 	@echo $(H1)Generating installation docs$(H1END)
 	@echo Placeholder for installation docs generation
 	@echo
+
+release: 
+	@read -p "Increase version: major, minor, or patch? " version_type; \
+	case $$version_type in \
+		major) bump-my-version bump major ;; \
+		minor) bump-my-version bump minor ;; \
+		patch) bump-my-version bump patch ;; \
+		*) echo "Invalid version type. Please specify major, minor, or patch." && exit 1 ;; \
+	esac; \
+	git push --follow-tags
