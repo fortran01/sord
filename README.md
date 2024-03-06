@@ -38,6 +38,10 @@ Set up the environment using the provided Makefile. Follow these steps:
 5. Run the tool for example by running `python -m sord --help`.
 6. Exit the virtual environment by running `deactivate`.
 
+## Known Issues
+
+- Some virus installers detect "Win32/Wacapew.C!ml" in the executable. This is a false positive. The tool is safe to use. See [PyInstaller Issue #5668](https://github.com/pyinstaller/pyinstaller/issues/5668) and check the Github Action workflow `release-app.yml` for the steps that builds and releases the tool.
+
 ## Credits
 
 This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
