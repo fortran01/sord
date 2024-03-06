@@ -35,7 +35,7 @@ jobs:
               PYINSTALLER="./venv/Scripts/pyinstaller.exe"
               $PYINSTALLER --onefile --name sord-windows-latest sord/__main__.py
               # Zip the Windows executable
-              7z a sord-windows-latest.zip ./dist/sord-windows-latest.exe
+              7z a ./dist/sord-windows-latest.zip ./dist/sord-windows-latest.exe
             else
               source ./venv/bin/activate
               PYINSTALLER="./venv/bin/pyinstaller"
@@ -55,6 +55,6 @@ jobs:
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
-            files: dist/sord* dist/*.zip
+            files: dist/sord*
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
