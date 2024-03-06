@@ -33,28 +33,28 @@ jobs:
             if [ "${{ matrix.os }}" = "windows-latest" ]; then
               ./venv/Scripts/activate
               PYINSTALLER="./venv/Scripts/pyinstaller.exe"
+              $PYINSTALLER --onefile --name sord-windows-latest sord/__main__.py
+              # Zip the Windows executable
+              7z a sord-windows-latest.zip ./dist/sord-windows-latest.exe
             else
               source ./venv/bin/activate
               PYINSTALLER="./venv/bin/pyinstaller"
+              case "${{ matrix.os }}" in
+                "macos-latest")
+                  $PYINSTALLER --onefile --name sord-macos-x86-64 sord/__main__.py
+                  ;;
+                "macos-14")
+                  $PYINSTALLER --onefile --name sord-macos-arm64 sord/__main__.py
+                  ;;
+                *)
+                  $PYINSTALLER --onefile --name sord-${{ matrix.os }} sord/__main__.py
+                  ;;
+              esac
             fi
-            case "${{ matrix.os }}" in
-              "macos-latest")
-                $PYINSTALLER --onefile --name sord-macos-x86-64 sord/__main__.py
-                ;;
-              "macos-14")
-                $PYINSTALLER --onefile --name sord-macos-arm64 sord/__main__.py
-                ;;
-              "windows-latest")
-                $PYINSTALLER --onefile --name sord-windows-latest sord/__main__.py
-                ;;
-              *)
-                $PYINSTALLER --onefile --name sord-${{ matrix.os }} sord/__main__.py
-                ;;
-            esac
         shell: bash
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
-            files: dist/sord*
+            files: dist/sord* dist/*.zip
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
