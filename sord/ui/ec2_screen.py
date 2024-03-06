@@ -226,7 +226,7 @@ class Ec2Screen(QDialog):
     def openRDPFile(self, rdp_file_path):
         if os.path.exists(rdp_file_path):
             if os.name == "nt":  # Windows
-                subprocess.run(["mstsc", rdp_file_path], check=True)
+                subprocess.run(["mstsc", rdp_file_path], shell=True)
             else:  # macOS and Linux
                 subprocess.run(["open", rdp_file_path], check=True)
         else:
