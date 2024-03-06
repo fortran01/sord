@@ -100,7 +100,7 @@ class PreCheckScreen(QWidget):
             else:
                 self.checkLabel.setText(
                     "✕ AWS CLI tool not found. AWS CLI tool is not installed. "
-                    "Please install it to proceed.<br>Installation instructions: "
+                    "Please install it to proceed and restart the app after installation.<br>Installation instructions: "
                     "<a href='https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html'>AWS CLI Installation Guide</a>"
                 )
                 self.checkLabel.setOpenExternalLinks(True)
@@ -113,7 +113,7 @@ class PreCheckScreen(QWidget):
             else:
                 self.checkLabel.setText(
                     self.checkLabel.text() + "<br>✕ Session Manager plugin not found. "
-                    "Please install it to proceed.<br>Installation instructions: "
+                    "Please install it to proceed and restart the app after installation.<br>Installation instructions: "
                     "<a href='https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html'>Session Manager Plugin Installation Guide</a>"
                 )
                 self.checkLabel.setOpenExternalLinks(True)
