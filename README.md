@@ -40,6 +40,8 @@ Set up the environment using the provided Makefile. Follow these steps:
 
 ## Known Issues
 
+- During download, the Windows executable may be flagged as a virus (e.g., Trojan:Win32/Sabsik.FL.A!ml) by Windows Defender. This is a false positive. Use the zipped Windows executable instead.
+- Windows Defender SmartScreen may block the tool from running because it is not signed. You can bypass this by clicking "More info" and then "Run anyway".
 - Some virus installers detect "Win32/Wacapew.C!ml" in the executable. This is a false positive. The tool is safe to use. See [PyInstaller Issue #5668](https://github.com/pyinstaller/pyinstaller/issues/5668) and check the Github Action workflow `release-app.yml` for the steps that builds and releases the tool.
 
 ## Credits
