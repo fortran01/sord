@@ -90,6 +90,7 @@ class Ec2Screen(QDialog):
             for index in range(other.count()):
                 item = other.item(index)
                 item.setSelected(False)
+                print(f"Item '{item.text()}' set to not selected.")
         self.updateRDPButtonState()
 
     def populate_ec2_instances(self):
