@@ -258,9 +258,13 @@ class Ec2Screen(QDialog):
 
     def getCurrentItemText(self):
         if self.ec2ListWidgetSessionManagerConnected.currentItem():
-            return self.ec2ListWidgetSessionManagerConnected.currentItem().text()
+            currentItemText = self.ec2ListWidgetSessionManagerConnected.currentItem().text()
+            print(f"Current item (Session Manager Connected): {currentItemText}")
+            return currentItemText
         elif self.ec2ListWidgetSessionManagerNotConnected.currentItem():
-            return self.ec2ListWidgetSessionManagerNotConnected.currentItem().text()
+            currentItemText = self.ec2ListWidgetSessionManagerNotConnected.currentItem().text()
+            print(f"Current item (Session Manager Not Connected): {currentItemText}")
+            return currentItemText
         else:
             raise AttributeError("No instance selected")
 
