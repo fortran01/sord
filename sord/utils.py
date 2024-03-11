@@ -5,7 +5,8 @@ import os
 def check_local_port_availability(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
-            sock.bind(("", port))
+            # ssm session manager plugin listens on "127.0.0.1"
+            sock.bind(("127.0.0.1", port))
             return True
         except socket.error as e:
             print(f"Port {port} is already in use by another process. Error: {e}")
