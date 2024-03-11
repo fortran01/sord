@@ -243,6 +243,7 @@ class Ec2Screen(QDialog):
             match = re.search(instanceIdPattern, currentItemText)
             if match:
                 selectedInstance = match.group()
+                logging.info(f"Toggling power state for instance: {selectedInstance}")
                 toggle_result = self.ec2_client.toggle_ec2_instance_state(
                     selectedInstance
                 )

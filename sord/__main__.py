@@ -3,12 +3,13 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMe
 from sord.ui.pre_check_screen import PreCheckScreen
 from sord.ui.login_screen import LoginScreen
 from sord.ui.ec2_screen import Ec2Screen
+from sord import __version__  # Import the version
 
 
 class MainApplicationWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("AWS Utility")
+        self.setWindowTitle(f"AWS Utility - v{__version__}")  # Include the version in the window title
         self.setGeometry(100, 100, 500, 400)
 
         self.stack = QVBoxLayout()
