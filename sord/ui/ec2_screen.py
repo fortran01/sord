@@ -86,6 +86,7 @@ class Ec2Screen(QDialog):
     def clearOtherSelectionBasedOnItemSelection(self, sender, other):
         # If any item is selected in the sender widget, clear selection in the other widget
         if sender.selectedItems():
+            print(f"Clearing selection in '{other.objectName()}' because '{sender.objectName()}' has selected items.")
             for index in range(other.count()):
                 item = other.item(index)
                 item.setSelected(False)
