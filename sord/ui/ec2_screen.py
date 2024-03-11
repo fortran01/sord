@@ -1,3 +1,4 @@
+import logging
 from PyQt6.QtWidgets import (
     QDialog,
     QVBoxLayout,
