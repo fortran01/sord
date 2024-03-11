@@ -1,4 +1,3 @@
-import logging
 from PyQt6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -7,7 +6,6 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QLabel,
     QDialogButtonBox,
-    QLineEdit,
     QAbstractItemView,  # Added import here
 )
 from PyQt6.QtCore import QTimer, Qt
@@ -244,7 +242,7 @@ class Ec2Screen(QDialog):
             match = re.search(instanceIdPattern, currentItemText)
             if match:
                 selectedInstance = match.group()
-                logging.info(f"Toggling power state for instance: {selectedInstance}")
+                print(f"Toggling power state for instance: {selectedInstance}")
                 toggle_result = self.ec2_client.toggle_ec2_instance_state(
                     selectedInstance
                 )
