@@ -258,11 +258,13 @@ class Ec2Screen(QDialog):
             )
 
     def getCurrentItemText(self):
-        if self.ec2ListWidgetSessionManagerConnected.currentItem():
+        # Check if any item is selected in the 'Session Manager Connected' list
+        if len(self.ec2ListWidgetSessionManagerConnected.selectedItems()) > 0:
             currentItemText = self.ec2ListWidgetSessionManagerConnected.currentItem().text()
             print(f"Current item (Session Manager Connected): {currentItemText}")
             return currentItemText
-        elif self.ec2ListWidgetSessionManagerNotConnected.currentItem():
+        # Check if any item is selected in the 'Session Manager Not Connected' list
+        elif len(self.ec2ListWidgetSessionManagerNotConnected.selectedItems()) > 0:
             currentItemText = self.ec2ListWidgetSessionManagerNotConnected.currentItem().text()
             print(f"Current item (Session Manager Not Connected): {currentItemText}")
             return currentItemText
