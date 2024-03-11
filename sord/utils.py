@@ -4,13 +4,12 @@ import os
 
 def check_local_port_availability(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        if sock.connect_ex(("", port)) == 0:
-            print(f"Port {port} is already in use by another process.")
-            return False
-        else:
+        try:
+            sock.bind(("", port))
             return True
-
+        except socket.error as e:
+            print(f"Port {port} is already in use by another process. Error: {e}")
+            return False
 
 def create_rdp_file(instance_id, local_port, file_name="connection.rdp"):
     """
