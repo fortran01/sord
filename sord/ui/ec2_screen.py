@@ -86,11 +86,9 @@ class Ec2Screen(QDialog):
     def clearOtherSelectionBasedOnItemSelection(self, sender, other):
         # If any item is selected in the sender widget, clear selection in the other widget
         if sender.selectedItems():
-            print(f"Clearing selection in '{other.objectName()}' because '{sender.objectName()}' has selected items.")
             for index in range(other.count()):
                 item = other.item(index)
                 item.setSelected(False)
-                print(f"Item '{item.text()}' set to not selected.")
         self.updateRDPButtonState()
 
     def populate_ec2_instances(self):
@@ -261,12 +259,10 @@ class Ec2Screen(QDialog):
         # Check if any item is selected in the 'Session Manager Connected' list
         if len(self.ec2ListWidgetSessionManagerConnected.selectedItems()) > 0:
             currentItemText = self.ec2ListWidgetSessionManagerConnected.currentItem().text()
-            print(f"Current item (Session Manager Connected): {currentItemText}")
             return currentItemText
         # Check if any item is selected in the 'Session Manager Not Connected' list
         elif len(self.ec2ListWidgetSessionManagerNotConnected.selectedItems()) > 0:
             currentItemText = self.ec2ListWidgetSessionManagerNotConnected.currentItem().text()
-            print(f"Current item (Session Manager Not Connected): {currentItemText}")
             return currentItemText
         else:
             raise AttributeError("No instance selected")
