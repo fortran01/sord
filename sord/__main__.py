@@ -39,6 +39,7 @@ class MainApplicationWindow(QMainWindow):
 
 
 def main():
+    print(f"Starting AWS Utility - version {__version__}")  # Print the version when the application starts
     try:
         app = QApplication(sys.argv)
         mainWindow = MainApplicationWindow()
